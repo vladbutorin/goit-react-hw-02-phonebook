@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 import { nanoid } from 'nanoid';
 import ContactForm from './ContactForm/ContactForm';
 import Filter from './Filter/Filter';
 import ContactList from './ContactList/ContactList';
 import { GlobalStyle } from './GlobalStyle ';
-
 
 const initialContacts = [
   { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
@@ -13,23 +12,23 @@ const initialContacts = [
   { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
 ];
 
-export const App = () => {
-  const [state, setState] = useState({
+export class App extends Component {
+  state = {
     contacts: initialContacts,
     filter: '',
-  });
-
-  const handleFilterChange = (e) => {
-    setState({ ...state, filter: e.target.value });
   };
 
-  const addContact = (name, number) => {
-    const isNameExists = state.contacts.some(
+  handleFilterChange = (e) => {
+    this.setState({ ...this.state, filter: e.target.value });
+  };
+
+  addContact = (name, number) => {
+    const isNameExists = this.state.contacts.some(
       (contact) => contact.name.toLowerCase() === name.toLowerCase()
     );
 
     if (isNameExists) {
-      alert(`Контакт ${name} уже присуцтвует в телефонной книге.`);
+      alert(`The contact ${name} already exists in the phonebook.`);
       return;
     }
 
@@ -39,46 +38,45 @@ export const App = () => {
       number,
     };
 
-    setState((prevState) => ({
+    this.setState((prevState) => ({
       contacts: [...prevState.contacts, newContact],
       filter: '',
     }));
   };
 
-  const handleDeleteContact = (id) => {
-    setState((prevState) => ({
+  handleDeleteContact = (id) => {
+    this.setState((prevState) => ({
       contacts: prevState.contacts.filter((contact) => contact.id !== id),
       filter: '',
     }));
   };
 
-  const getFilteredContacts = () => {
-    const normalizedFilter = state.filter.toLowerCase();
-    return state.contacts.filter((contact) =>
+  getFilteredContacts = () => {
+    const normalizedFilter = this.state.filter.toLowerCase();
+    return this.state.contacts.filter((contact) =>
       contact.name.toLowerCase().includes(normalizedFilter)
     );
   };
 
-  return (
-    <div>
-      <h1>Phonebook</h1>
-
-      <ContactForm onAddContact={addContact} />
-
-      <h2>Contacts</h2>
-      <Filter
-        title="Find contacts by name: "
-        value={state.filter}
-        onChange={handleFilterChange}
-      />
-      <ContactList
-        contacts={getFilteredContacts()}
-        onDeleteContact={handleDeleteContact}
-      />
-
-      <GlobalStyle />
-    </div>
-  );
-};
+  render() {
+    return (
+      <div>
+        <h1>Phonebook</h1>
+        <ContactForm onAddContact={this.addContact} />
+        <h2>Contacts</h2>
+        <Filter
+          title="Find contacts by name: "
+          value={this.state.filter}
+          onChange={this.handleFilterChange}
+        />
+        <ContactList
+          contacts={this.getFilteredContacts()}
+          onDeleteContact={this.handleDeleteContact}
+        />
+        <GlobalStyle />
+      </div>
+    );
+  }
+}
 
 export default App;
